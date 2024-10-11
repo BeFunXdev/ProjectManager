@@ -1,4 +1,4 @@
-from Application import Application
+from src.Application import Application
 import sys
 import os
 
