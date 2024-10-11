@@ -11,8 +11,9 @@ class CommandParser:
 
     def add_command(self, subparser: SubParser, params: list[Param], func):
         parser_add = self.subparsers.add_parser(subparser.name, help=subparser.help)
-        for param in params:
-            parser_add.add_argument(param.name, help=param.help)
+        if params != []:
+            for param in params:
+                parser_add.add_argument(param.name, help=param.help)
         parser_add.set_defaults(func=func)
 
     def execute(self, args):

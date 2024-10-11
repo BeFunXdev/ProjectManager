@@ -1,6 +1,5 @@
 import os.path
 import sys
-from typing import List
 
 from src.commandParser.CommandParser import CommandParser
 from src.config.jsonFiles import DataFiles
@@ -27,16 +26,23 @@ class Application:
             self._start
         )
 
-        print('command add')
-        print(DataFiles.PROJECT_LIST)
+        self.command_parser.add_command(
+            SubParser(name="delete", help="Удоляет проект"),
+            [Param(name='name', help='Введите алиас своего проекта')],
+            self._delete
+        )
+
+        self.command_parser.add_command(
+            SubParser(name="list", help="Ввыводит все проекты"),
+            [],
+            self._list
+        )
 
         if len(args) == 0:
             self.command_parser.help()
             sys.exit(1)
         else:
             self.command_parser.execute(args)
-        # args = self.parser.parse_args(args)
-        # args.func(args)
 
     def _add(self, args):
         data = self.reader.json_read(DataFiles.PROJECT_LIST)
@@ -47,6 +53,26 @@ class Application:
         else:
             data.append({"name": args.name, "path": os.path.abspath(args.path)})
             self.reader.json_write(DataFiles.PROJECT_LIST, data)
+
+    def _delete(self, args):
+        data = self.reader.json_read(DataFiles.PROJECT_LIST)
+        project = self._find_project(data, args.name)
+
+        if (project == None):
+            print('Такого проекта нет!')
+        else:
+            data.remove(project)
+            self.reader.json_write(DataFiles.PROJECT_LIST, data)
+
+    def _list(self, args):
+        projects = self.reader.json_read(DataFiles.PROJECT_LIST)
+
+        if projects != []:
+            print('Алиасы выших пректов:')
+            for project in projects:
+                print(project['name'])
+        else:
+            print('Вы ещё не добавили проекты')
 
     def _start(self, args):
         project = Application._find_project(self.reader.json_read(DataFiles.PROJECT_LIST), args.name)

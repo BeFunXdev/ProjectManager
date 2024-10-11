@@ -29,7 +29,5 @@ class ConfigReader:
 
     @staticmethod
     def json_write(file_name, data):
-        print('json path: ' + ConfigReader._get_path(file_name))
-        print('write data: ', data)
         with open(ConfigReader._get_path(file_name), "w") as fh:
             json.dump(data, fh)
